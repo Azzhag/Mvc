@@ -69,6 +69,11 @@ namespace Microsoft.AspNet.Mvc.Core.Test
             return new TaskOfTDerivedType<int>(1);
         }
 
+        public ActionWithDefaultParametersResult ActionWithDefaultParameters(int a, string b = null, int c = 3)
+        {
+            return new ActionWithDefaultParametersResult { A = a, B = b, C = c };
+        }
+
         /// <summary>
         /// Returns a Task<Task> instead of a Task. This should throw an InvalidOperationException.
         /// </summary>
@@ -107,6 +112,15 @@ namespace Microsoft.AspNet.Mvc.Core.Test
                 : base(() => input)
             {
             }
+        }
+
+        public class ActionWithDefaultParametersResult
+        {
+            public int A { get; set; }
+
+            public string B { get; set; }
+
+            public int C { get; set; }
         }
     }
 }

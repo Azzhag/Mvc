@@ -98,7 +98,8 @@ namespace Microsoft.AspNet.Mvc
                 var parameterInfo = declaredParameterInfos[index];
                 object value;
 
-                if (!actionParameters.TryGetValue(parameterInfo.Name, out value))
+                if (!actionParameters.TryGetValue(parameterInfo.Name, out value) ||
+                    value == null)
                 {
                     if (parameterInfo.HasDefaultValue)
                     {

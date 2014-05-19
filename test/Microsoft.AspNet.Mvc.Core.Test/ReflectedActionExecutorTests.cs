@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Core.Test
 {
-    public class ActionExecutorTests
+    public class ReflectedActionExecutorTests
     {
         private TestController _controller = new TestController();
 
@@ -289,6 +289,49 @@ namespace Microsoft.AspNet.Mvc.Core.Test
                                                                                     _controller, 
                                                                                     actionParameters),
                                                 expectedException);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_ForActionWithDefaultParameters_PopulatesIfValueIsNotPresent()
+        {
+            // Arrange
+            var actionParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            Func<int, string, int, TestController.ActionWithDefaultParametersResult> method = _controller.ActionWithDefaultParameters;
+
+            // Act
+            var result = await ReflectedActionExecutor.ExecuteAsync(
+                                                        method.GetMethodInfo(),
+                                                        _controller,
+                                                        actionParameters);
+            // Assert
+            var parameterResult = Assert.IsType<TestController.ActionWithDefaultParametersResult>(result);
+            Assert.Equal(0, parameterResult.A);
+            Assert.Null(parameterResult.B);
+            Assert.Equal(3, parameterResult.C);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_ForActionWithDefaultParameters_PopulatesIfValueIsNull()
+        {
+            // Arrange
+            var actionParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "a", -1 },
+                { "b", "foo" },
+                { "c", null }
+            };
+            Func<int, string, int, TestController.ActionWithDefaultParametersResult> method = _controller.ActionWithDefaultParameters;
+
+            // Act
+            var result = await ReflectedActionExecutor.ExecuteAsync(
+                                                        method.GetMethodInfo(),
+                                                        _controller,
+                                                        actionParameters);
+            // Assert
+            var parameterResult = Assert.IsType<TestController.ActionWithDefaultParametersResult>(result);
+            Assert.Equal(-1, parameterResult.A);
+            Assert.Equal("foo", parameterResult.B);
+            Assert.Equal(3, parameterResult.C);
         }
 
         // TODO: XUnit Assert.Throw is not async-aware. Check if the latest version supports it.
