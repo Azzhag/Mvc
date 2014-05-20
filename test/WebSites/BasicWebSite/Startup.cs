@@ -1,0 +1,31 @@
+﻿using System;
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Routing;
+using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Framework.DependencyInjection;
+
+namespace BasicWebSite
+{
+    public class Startup
+    {
+        public void Configure(IBuilder app)
+        {
+            // Set up application services
+            app.UseServices(services =>
+            {
+                // Add MVC services to the services container
+                services.AddMvc();
+            });
+
+            // Add MVC to the request pipeline
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("ActionAsMethod", "{controller}/{action}/{id?}",
+                    defaults: new { controller = "Home", action = "Index" });
+
+                routes.MapRoute("HttpVerbAsMethod", "{controller}/{id?}");
+            });
+        }
+    }
+}
